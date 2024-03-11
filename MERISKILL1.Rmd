@@ -1,0 +1,82 @@
+---
+title: "MERISKILL1"
+author: "Alfred Analyst"
+date: "2024-03-11"
+output:
+  pdf_document: default
+  html_document: default
+---
+```{r}
+
+#importing libraries
+library(calibrate)
+library(corrplot)
+library(Correlplot)
+
+library(skimr)
+library(janitor)
+library(dplyr)
+
+library("tidyverse")
+library("lubridate")
+library("ggplot2")
+
+library("GGally")
+
+
+```
+```{r}
+diabetes <- read.csv("E:/PROJECTS/MERISKILL/Project 2 - Diabetes Data/diabetes.csv")
+
+head(diabetes)
+
+colnames(diabetes)
+
+glimpse(diabetes)
+
+str(diabetes)
+
+dim(diabetes)
+
+summary(diabetes)
+
+min(diabetes$Age)
+
+max(diabetes$BloodPressure)
+
+mean(diabetes$BMI)
+
+range(diabetes$Age)
+
+View(diabetes)
+
+hist(diabetes$Pregnancies)
+
+hist(diabetes$Glucose)
+
+hist(diabetes$BloodPressure)
+
+hist(diabetes$SkinThickness)
+
+hist(diabetes$Insulin)
+
+hist(diabetes$BMI)
+
+hist(diabetes$DiabetesPedigreeFunction)
+
+hist(diabetes$Age)
+
+hist(diabetes$Outcome)
+
+plot(diabetes$Age)
+
+plot(diabetes)
+
+plot(diabetes$Outcome)
+
+plot(diabetes$BloodPressure, diabetes$Insulin)
+
+plot(diabetes$Age, diabetes$Insulin)
+```
+
+
