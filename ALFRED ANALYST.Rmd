@@ -1,0 +1,493 @@
+---
+title: "Quantium Virtual Internship - Retail Strategy and Analytics - Task 1"
+author: "Alfred Analyst"
+date: "2024-02-01"
+output:
+  pdf_document: 
+    latex_engine: xelatex
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+#loading libraries
+
+#exploratory data analysis
+
+#examining transaction data
+
+#### Examining the words in PROD_NAME to see if there are any incorrect entries 
+#### such as products that are not chips
+
+#### Removing digits and special characters
+
+###CHECKING FREQUENCY OF PRODUCTS
+```{r loading libraries}
+
+  install.packages("utils")
+  
+cran_mirrors <- utils::getCRANmirrors()
+
+print(cran_mirrors)
+
+options(repos = "USA (IN)")
+install.packages("data.table")
+install.packages("ggmosaic")
+
+library(data.table)
+library(ggplot2)
+library(ggmosaic)
+library(readr)
+library(readxl)
+
+install.packages("tinytex")
+
+library("tinytex")
+tinytex::install_tinytex()
+
+
+tinytex::install_tinytex(force = TRUE)
+
+setwd("E:/FORAGE")
+
+transactiondata <- read_excel("E:/FORAGE/QVI_transaction_data.xlsx")
+
+customerdata <- fread(paste0("E:/FORAGE/QVI_purchase_behaviour.csv"))
+
+head(transactiondata)
+
+colnames(transactiondata)
+
+glimpse(transactiondata)
+
+str(transactiondata)
+
+dim(transactiondata)
+
+summary(transactiondata)
+
+View(transactiondata)
+
+transactiondata$DATE <- as.Date(transactiondata$DATE, origin = "1899-12-30")
+
+summary(transactiondata$PROD_NAME)
+
+productWords <- data.table(unlist(strsplit(unique(transactiondata$PROD_NAME), " ")))
+
+View(productWords)
+
+setnames(productWords, 'words')
+
+View(productWords)
+
+transactiondata$PROD_NAME[!grepl("[@?.*$#&]", transactiondata$PROD_NAME)]
+
+transactiondata %>% count(PROD_NAME)
+```
+
+
+```{r}
+#### summary
+summary(transactiondata)
+
+##checking for nulls
+is.na(transactiondata)
+
+###checking for outliers
+
+boxplot(transactiondata$PROD_QTY,
+  ylab = "product_quantity")
+#filtering 200 figure outlier
+top_quantity<- transactiondata%>% 
+            arrange(desc(PROD_QTY)) %>%
+            group_by(PROD_NAME) %>%
+            head(5)
+
+View(top_quantity)
+##DISPLAYING CUSTOMER DETAILS FOR 200 CUSTOMER
+subset(transactiondata, LYLTY_CARD_NBR =="226000", select= DATE:TOT_SALES)
+
+##FILTERING THE 200 CUSTOMER USING LOYALTY NUMBER
+newtransactiondata <- subset(transactiondata, PROD_QTY < 200,select=DATE:TOT_SALES)
+
+View(newtransactiondata)
+
+###NUMBER OF TRANSACTIONS
+dates <- newtransactiondata %>% count(DATE)
+
+View(dates)
+##adding date column
+
+DATE<-seq(as.Date("2018-07-01"),as.Date("2019-06-30"),by = 1)
+
+days <- data.frame(DATE)
+View(days)
+
+transactiondates <- merge(days,dates, by = "DATE")
+
+print(transactiondates)
+
+View(transactiondates)
+```
+
+
+```{r}
+#plots
+#### Setting plot themes to format graphs
+
+theme_set(theme_bw())
+theme_update(plot.title = element_text(hjust = 0.5))
+
+#### Plot transactions over time
+ggplot(transactiondates, aes(x = DATE, y = n)) +
+ geom_line() +
+ labs(x = "Day", y = "Number of transactions", title = "Transactions over time") +
+ scale_x_date(breaks = "1 month") +
+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('transactions_by_date.png',
+       width=16,
+       height=8)###image1
+
+dec_transactions <- filter(transactiondates,DATE >= "2018-12-01" & DATE <= "2018-12-31")
+
+#plot for December
+ggplot(dec_transactions, aes(x = DATE, y = n)) +
+ geom_line() +
+ labs(x = "Day", y = "Number of transactions", title = "December Transactions") +
+ scale_x_date(breaks = "1 day") +
+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('transactions_of_december.png',
+       width=16,
+       height=8)###image2
+```
+
+
+```{r Create pack size}
+#### Pack size
+#### We can work this out by taking the digits that are in PROD_NAME
+library(stringr)
+View(newtransactiondata)
+packs <- str_sub(newtransactiondata$PROD_NAME,-4) 
+View(packs)
+
+t_new <- newtransactiondata$last_4_string = str_sub(newtransactiondata$PROD_NAME,-4) 
+View(newtransactiondata)
+
+#plot for histogram of packsize by number of transactions
+library(ggplot2)
+ggplot(newtransactiondata, aes(x = last_4_string)) +
+ geom_histogram() +
+ labs(x = "pack size", y = "Number of transactions", title = "Transactions over pack size") +
+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+```
+
+
+```{r customer data}
+#loading libraries
+
+install.packages("data.table")
+install.packages("ggmosaic")
+
+library(data.table)
+library(ggplot2)
+library(ggmosaic)
+library(readr)
+library(readxl)
+
+setwd("E:/FORAGE")
+
+transactiondata <- fread(paste0("E:/FORAGE/QVI_transaction_data.csv"))
+View(transactiondata)
+
+customerdata <- fread(paste0("E:/FORAGE/QVI_purchase_behaviour.csv"))
+
+###exploratory data analysis for customer data
+
+head(customerdata)
+
+colnames(customerdata)
+
+glimpse(customerdata)
+
+str(customerdata)
+
+dim(customerdata)
+
+summary(customerdata)
+
+View(customerdata)
+
+#filtering 200 figure outlier
+top_quantity<- transactiondata%>% 
+            arrange(desc(PROD_QTY)) %>%
+            group_by(PROD_NAME) %>%
+            head(5)
+
+View(top_quantity)
+##DISPLAYING CUSTOMER DETAILS FOR 200 CUSTOMER
+subset(transactiondata, LYLTY_CARD_NBR =="226000", select= DATE:TOT_SALES)
+
+##FILTERING THE 200 CUSTOMER USING LOYALTY NUMBER
+newtransactiondata <- subset(transactiondata, PROD_QTY < 200,select=DATE:TOT_SALES)
+
+View(newtransactiondata)
+
+
+data <- merge(newtransactiondata, customerdata)
+
+#checking for nulls
+is.na(data)
+###Code to save dataset as a csv
+fwrite(data, paste0("E:/FORAGE/QVI_data.csv"))
+```
+
+
+```{r analysis of data}
+library(dplyr)
+
+library(tidyverse)
+
+View(data)
+
+data$DATE <- as.Date(data$DATE, origin = "1899-12-30")
+
+
+#number of customers in each segment
+data %>% count(PREMIUM_CUSTOMER)
+
+data %>% count(LIFESTAGE)
+
+#number of chips per customer per segment
+ data %>% group_by(PREMIUM_CUSTOMER)  %>%
+        summarise(total_chips_quantity = sum(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(total_chips_quantity))
+ 
+ data %>% group_by(LIFESTAGE)  %>%
+        summarise(total_chips_quantity = sum(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(total_chips_quantity))
+ 
+ #Average chips price per customer segment
+data %>% group_by(PREMIUM_CUSTOMER)  %>%
+        summarise(avg_chips_price = mean(TOT_SALES), 
+        .groups = 'drop')  %>%
+        arrange(desc(avg_chips_price))
+ 
+ data %>% group_by(LIFESTAGE)  %>%
+        summarise(avg_chips_price = mean(TOT_SALES), 
+        .groups = 'drop')  %>%
+        arrange(desc(avg_chips_price))
+ 
+ #Total spend and quantity by individual customers 
+ data %>% group_by(LYLTY_CARD_NBR)  %>%
+        summarise(Total_quantity = sum(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(Total_quantity))
+ 
+ data %>% group_by(LYLTY_CARD_NBR)  %>%
+        summarise(Total_price = sum(TOT_SALES), 
+        .groups = 'drop') %>%
+        arrange(desc(Total_price))
+ 
+ #total quantity and total spend by date
+ data %>% group_by(DATE)  %>%
+        summarise(Total_quantity = sum(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(Total_quantity))
+ 
+ data %>% group_by(DATE)  %>%
+        summarise(Total_price = sum(TOT_SALES), 
+        .groups = 'drop') %>%
+        arrange(desc(Total_price))
+```
+
+
+```{r PLOTS}
+#plot for total sales by LIFESTAGE 
+sales <- data %>% group_by(LIFESTAGE)  %>%
+         summarise(total_chips_sales = sum(TOT_SALES), 
+         .groups = 'drop') %>%
+         arrange(desc(total_chips_sales))
+
+View(sales)
+
+mindate <- min(data$DATE)
+
+maxdate <- max(data$DATE)
+
+ggplot(data = sales) +
+  geom_col(mapping = aes(x = LIFESTAGE, y = total_chips_sales)) +
+  labs(title="Comparison of total chips sales by lifestage",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "LIFESTAGE",
+       y = "total_chips_sales") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('total_chips_sales_by_lifestage.png',
+       width=10,
+       height=5)###image3
+
+#plot for total sales by PREMIUM CUSTOMER
+sales1 <- data %>% group_by(PREMIUM_CUSTOMER)  %>%
+         summarise(total_chips_sales = sum(TOT_SALES), 
+         .groups = 'drop') %>%
+         arrange(desc(total_chips_sales))
+
+View(sales1)
+
+ggplot(data = sales1) +
+  geom_col(mapping = aes(x = PREMIUM_CUSTOMER, y = total_chips_sales)) +
+  labs(title="Comparison of total chips sales by PREMIUM_CUSTOMER",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "PREMIUM CUSTOMER",
+       y = "total_chips_sales") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('total_chips_sales_by_premium_customer.png',
+       width=10,
+       height=5)###image4
+```
+
+
+```{r PLOTS2}
+#number of customers in each segment
+##PREMIUM CUSTOMER
+premium <- data %>% count(PREMIUM_CUSTOMER)
+
+View(premium)
+
+ggplot(data = premium) +
+  geom_col(mapping = aes(x = PREMIUM_CUSTOMER, y = n)) +
+  labs(title="Comparison of number of customers by PREMIUM_CUSTOMER",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "PREMIUM CUSTOMER",
+       y = "total_customers") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('total_customers_by_premium_customer.png',
+       width=10,
+       height=5)###image5
+
+##LIFESTAGE
+life <- data %>% count(LIFESTAGE)
+
+View(life)
+
+ggplot(data = life) +
+  geom_col(mapping = aes(x = LIFESTAGE, y = n)) +
+  labs(title="Comparison of number of customers by life_stage",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "LIFESTAGE",
+       y = "total_customers") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('total_customers_by_life_stage.png',
+       width=10,
+       height=5)###image6
+```
+
+
+```{r PLOTS3}
+#### Average number of units per customer by LIFESTAGE and PREMIUM_CUSTOMER
+#Average chips price per customer segment
+avg1 <- data %>% group_by(PREMIUM_CUSTOMER)  %>%
+        summarise(avg_chips_quantity = mean(PROD_QTY), 
+        .groups = 'drop')  %>%
+        arrange(desc(avg_chips_quantity))
+
+View(avg1)
+
+ggplot(data = avg1) +
+  geom_col(mapping = aes(x = PREMIUM_CUSTOMER, y = avg_chips_quantity)) +
+  labs(title="Comparison of average units of chips by PREMIUM_CUSTOMER",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "PREMIUM CUSTOMER",
+       y = "average units") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('average_chips_units_by_premium_customer.png',
+       width=10,
+       height=5)###image7
+ 
+ avg2 <- data %>% group_by(LIFESTAGE)  %>%
+        summarise(avg_chips_units = mean(PROD_QTY), 
+        .groups = 'drop')  %>%
+        arrange(desc(avg_chips_units))
+
+ View(avg2)
+
+ggplot(data = avg2) +
+  geom_col(mapping = aes(x = LIFESTAGE, y = avg_chips_units)) +
+  labs(title="Comparison of average units of chips by LIFE STAGE",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "LIFE STAGE",
+       y = "average units") +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5))
+
+ggsave('average_chips_units_by_lifestage.png',
+       width=10,
+       height=5)###image8
+```
+
+
+```{r MAINSTREAM, YOUNG/SINGLE COUPLES}
+##DISPLAYING CUSTOMER DETAILS FOR MAINSTREAM , YOUNG/SINGLE COUPLES
+subset(data, PREMIUM_CUSTOMER=="Mainstream" & LIFESTAGE == "YOUNG SINGLES/COUPLES", select= DATE:PREMIUM_CUSTOMER)
+
+##FILTERING THE OUT THE MAINSTREAM, YOUNG/SINGLE COUPLES
+mys_c = subset(data, PREMIUM_CUSTOMER=="Mainstream" & LIFESTAGE == "YOUNG SINGLES/COUPLES", select= DATE:PREMIUM_CUSTOMER)
+
+View(mys_c)
+
+summary(mys_c)
+
+##number of orders
+mys_c %>% count(PROD_NAME)%>%
+        arrange(desc(n))
+
+#chips preference by total sales and quantity
+mys_c %>% group_by(PROD_NAME)  %>%
+        summarise(total_chips_quantity = sum(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(total_chips_quantity))
+
+mys_c %>% group_by(PROD_NAME)  %>%
+        summarise(total_chips_sales = sum(TOT_SALES), 
+        .groups = 'drop') %>%
+        arrange(desc(total_chips_sales))
+#Chips preference by average of total sales and quantity
+mys_c %>% group_by(PROD_NAME)  %>%
+        summarise(avg_chips_quantity = mean(PROD_QTY), 
+        .groups = 'drop') %>%
+        arrange(desc(avg_chips_quantity))
+
+mys_c %>% group_by(PROD_NAME)  %>%
+        summarise(avg_chips_sales = mean(TOT_SALES), 
+        .groups = 'drop') %>%
+        arrange(desc(avg_chips_sales))
+
+##INSIGHTS
+#Tostitos Splash Of Lime 175g, Kettle Mozzarella Basil & Pesto 175g and Doritos Corn Chips Cheese Supreme 170g	are the most ordered brands with 335, 332 and 326 orders made for the products.
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
