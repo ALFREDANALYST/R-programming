@@ -1,0 +1,458 @@
+---
+title: "US UNEMPLOYMENT"
+author: "Alfred Analyst"
+date: "2024-03-16"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r}
+
+
+
+library(ggplot2)
+library(ggmosaic)
+library(readr)
+library(readxl)
+
+library(calibrate)
+library(corrplot)
+library(Correlplot)
+
+library(skimr)
+library(janitor)
+library(dplyr)
+
+library("tidyverse")
+library("lubridate")
+library("ggplot2")
+
+library("GGally")
+
+setwd("E:/R-PROJECTS")
+
+unemployment <- read_excel("E:/R-PROJECTS/unemployed_population_1978-12_to_2023-07.xlsx")
+
+```
+
+
+
+
+
+
+```{r exploratory data analysis}
+head(unemployment)
+
+colnames(unemployment)
+
+glimpse(unemployment)
+
+str(unemployment)
+
+dim(unemployment)
+
+summary(unemployment)
+
+View(unemployment)
+
+hist(unemployment$all)
+
+hist(unemployment$`16-24`)
+
+hist(unemployment$`25-54`)
+
+hist(unemployment$`55-64`)
+
+hist(unemployment$`65+`)
+
+hist(unemployment$less_than_hs)
+
+hist(unemployment$high_school)
+
+hist(unemployment$some_college)
+
+hist(unemployment$`bachelor's_degree`)
+
+hist(unemployment$advanced_degree)
+
+hist(unemployment$women)
+
+hist(unemployment$men)
+
+hist(unemployment$black)
+
+hist(unemployment$hispanic)
+
+hist(unemployment$white)
+
+hist(unemployment$population_over_16)
+
+
+```
+```{r analysis of dataset}
+max(unemployment$all)
+
+min(unemployment$all)
+
+range(unemployment$all)
+
+mean(unemployment$all)
+
+max(unemployment$`16-24`)
+
+min(unemployment$`16-24`)
+
+range(unemployment$`16-24`)
+
+mean(unemployment$`16-24`)
+
+max(unemployment$`25-54`)
+
+min(unemployment$`25-54`)
+
+range(unemployment$`25-54`)
+
+mean(unemployment$`25-54`)
+
+max(unemployment$`55-64`)
+
+min(unemployment$`55-64`)
+
+range(unemployment$`55-64`)
+
+mean(unemployment$`55-64`)
+
+max(unemployment$`65+`)
+
+min(unemployment$`65+`)
+
+range(unemployment$`65+`)
+
+mean(unemployment$`65+`)
+
+max(unemployment$less_than_hs)
+
+max(unemployment$less_than_hs)
+
+range(unemployment$less_than_hs)
+
+mean(unemployment$less_than_hs)
+
+max(unemployment$high_school)
+
+min(unemployment$high_school)
+
+range(unemployment$high_school)
+
+mean(unemployment$high_school)
+
+max(unemployment$some_college)
+
+min(unemployment$some_college)
+
+range(unemployment$some_college)
+
+mean(unemployment$some_college)
+
+max(unemployment$`bachelor's_degree`)
+
+min(unemployment$`bachelor's_degree`)
+
+range(unemployment$`bachelor's_degree`)
+
+mean(unemployment$`bachelor's_degree`)
+
+max(unemployment$advanced_degree)
+
+min(unemployment$advanced_degree)
+
+range(unemployment$advanced_degree)
+
+mean(unemployment$advanced_degree)
+
+max(unemployment$women)
+
+min(unemployment$women)
+
+range(unemployment$women)
+
+mean(unemployment$women)
+
+max(unemployment$men)
+
+min(unemployment$men)
+
+range(unemployment$men)
+
+mean(unemployment$men)
+
+max(unemployment$black)
+
+min(unemployment$black)
+
+range(unemployment$black)
+
+mean(unemployment$black)
+
+max(unemployment$hispanic)
+
+min(unemployment$hispanic)
+
+range(unemployment$hispanic)
+
+mean(unemployment$hispanic)
+
+max(unemployment$white)
+
+min(unemployment$white)
+
+range(unemployment$white)
+
+mean(unemployment$white)
+
+max(unemployment$population_over_16)
+
+min(unemployment$population_over_16)
+
+range(unemployment$population_over_16)
+
+mean(unemployment$population_over_16)
+
+mindate <- min(unemployment$date)
+
+maxdate <- max(unemployment$date)
+
+```
+
+```{r analysis}
+
+###DATES WHEN UNEMPLOYMENT IS ABOVE AND EQUAL TO THE MEAN UNEMPLOYMENT
+
+mean(unemployment$all)
+
+unemployment[unemployment['all'] >= 6.16,]
+
+####dates when unemployment is greater or equal to the average for 16-24
+ 
+mean(unemployment$`16-24`)
+
+unemployment[unemployment['16-24'] >= 12.56,]
+
+###dates when unemployment is greater or equal to the average for 25-54
+
+mean(unemployment$`25-54`)
+
+unemployment[unemployment['25-54'] >= 5.09,]
+
+####dates when unemployment is greater or equal to the average for 55-64
+
+mean(unemployment$`55-64`)
+
+unemployment[unemployment['55-64'] >= 3.98,]
+
+###dates when unemployment is greater or equal to the average for 65+
+ 
+mean(unemployment$`65+`)
+
+unemployment[unemployment['65+'] >= 3.78,]
+
+###dates when unemployment is greater or equal to the average for less than hs
+
+mean(unemployment$less_than_hs)
+
+unemployment[unemployment['less_than_hs'] >= 12.37,]
+
+###dates when unemployment is greater or equal to the average for high_school
+
+mean(unemployment$high_school)
+
+unemployment[unemployment['high_school'] >= 6.90, ]
+
+###dates when unemployment is greater than or equal the average for some_college
+
+mean(unemployment$some_college)
+
+unemployment[unemployment['some_college'] >= 5.35,]
+
+###dates when unemployment is greater than or equal the average for bachelor's 
+
+mean(unemployment$`bachelor's_degree`)
+
+unemployment[unemployment["bachelor's_degree"] >= 3.23,]
+
+###dates when unemployment is greater than or equal the average for adv.degree
+
+mean(unemployment$advanced_degree)
+
+unemployment[unemployment['advanced_degree'] >= 2.24,]
+
+###dates when unemployment is greater than or equal the average for women
+
+mean(unemployment$women)
+
+unemployment[unemployment['women'] >= 6.01,]
+
+###dates when unemployment is greater than or equal the average for men
+
+mean(unemployment$men)
+
+unemployment[unemployment['men'] >= 6.22,] 
+
+###dates when unemployment is greater than or equal the average for blacks
+
+mean(unemployment$black)
+
+unemployment[unemployment['black'] >= 11.58,]
+
+###dates when unemployment is greater than or equal the average for hispanics
+
+mean(unemployment$hispanic)
+
+unemployment[unemployment['hispanic'] >= 8.49,]
+
+###dates when unemployment is greater than or equal the average for whites
+
+mean(unemployment$white)
+
+unemployment[unemployment['white'] >= 5.01,]
+
+```
+```{r plots}
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = all)) +
+  labs(title="Comparison of unemployment rate by date",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE1
+
+###renaming column 16-24
+
+unemployment1 <- rename(unemployment, entries = '16-24')
+
+View(unemployment1)
+
+ggplot(data = unemployment1) +
+  geom_line(mapping = aes(x = date, y = entries)) +
+  labs(title="Comparison of date and unemployment rate among 16-24 year olds",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")##IMAGE2
+
+###renaming column 25-54
+
+unemployment2 <- rename(unemployment, working_class = '25-54')
+
+View(unemployment2)
+
+ggplot(data = unemployment2) +
+  geom_line(mapping = aes(x = date, y = working_class)) +
+  labs(title="Comparison of date and unemployment rate among 25-54 year olds",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")##IMAGE3
+
+###renaming column 55-64
+
+unemployment3 <- rename(unemployment, late_working = '55-64')
+
+View(unemployment3)
+
+ggplot(data = unemployment3) +
+  geom_line(mapping = aes(x = date, y = late_working)) +
+  labs(title="Comparison of date and unemployment rate among 55-64 year olds",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")##IMAGE4
+
+###renaming column 65+
+
+unemployment4 <- rename(unemployment, retirees = '65+')
+
+View(unemployment4)
+
+ggplot(data = unemployment4) +
+  geom_line(mapping = aes(x = date, y = retirees)) +
+  labs(title="Comparison of date and unemployment rate among 65+ year olds",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")##IMAGE5
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = less_than_hs)) +
+  labs(title="Comparison of unemployment rate by date for people with less than highschool education",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE6
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = high_school)) +
+  labs(title="Comparison of unemployment rate by date for people that stopped in highschool",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE7
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = some_college)) +
+  labs(title="Comparison of unemployment rate by date by people that attended some college",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE8
+
+###renaming column bachelor's degree
+
+unemployment5 <- rename(unemployment, bachelor = "bachelor's_degree")
+
+View(unemployment5)
+
+ggplot(data = unemployment5) +
+  geom_line(mapping = aes(x = date, y = bachelor)) +
+  labs(title="Comparison of unemployment rate by date for degree holders",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE9
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = advanced_degree)) +
+  labs(title="Comparison of unemployment rate by date for advanced_degree holders",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE10
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = women)) +
+  labs(title="Comparison of unemployment rate by date for women",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE11
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = men)) +
+  labs(title="Comparison of unemployment rate by date for men",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE12
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = black)) +
+  labs(title="Comparison of unemployment rate by date for blacks",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE13
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = hispanic)) +
+  labs(title="Comparison of unemployment rate by date for hispanics",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE14
+
+ggplot(data = unemployment) +
+  geom_line(mapping = aes(x = date, y = white)) +
+  labs(title="Comparison of unemployment rate by date for whites",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "DATE",
+       y = "UNEMPLOYMENT RATE")###IMAGE15
+
+```
+
