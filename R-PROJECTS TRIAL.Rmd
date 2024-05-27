@@ -1,0 +1,303 @@
+---
+title: "R-TRIAL PROJECTS"
+author: "Alfred Analyst"
+date: "2024-05-25"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+library(ggmosaic)
+library(readr)
+library(readxl)
+
+library(calibrate)
+library(corrplot)
+library(Correlplot)
+
+library(skimr)
+library(janitor)
+library(dplyr)
+
+library("tidyverse")
+library("lubridate")
+library("ggplot2")
+
+library("GGally")
+
+#dataset1
+fact_table <- read_csv("E:/DATASETS/fact_table.csv")
+
+item_dim   <- read_csv("E:/DATASETS/item_dim.csv")
+
+time_dim   <- read_csv("E:/DATASETS/time_dim.csv")
+
+store_dim  <- read_csv("E:/DATASETS/store_dim.csv")
+
+customer_dim <- read_csv("E:/DATASETS/customer_dim.csv")
+
+Trans_dim   <- read_csv("E:/DATASETS/Trans_dim.csv")
+```
+
+```{r}
+View(fact_table)
+
+View(item_dim)
+
+View(time_dim)
+
+View(store_dim)
+
+View(customer_dim)
+
+View(Trans_dim)
+
+
+```
+
+```{r}
+#dataset2
+
+car_prices <- read_csv("E:/PROJECTS/PYTHON PROJECTS/car_prices.csv")
+
+View(car_prices)
+
+colnames(car_prices)
+
+sum(is.na(car_prices))
+
+sum(is.na(car_prices$year))
+
+sum(is.na(car_prices$make))
+
+sum(is.na(car_prices$model))
+
+sum(is.na(car_prices$trim))
+
+sum(is.na(car_prices$body))
+
+sum(is.na(car_prices$transmission))
+
+##dropping nulls
+
+carprices <- drop_na(car_prices)
+
+View(carprices)
+
+sum(duplicated(carprices))
+
+sum(is.na(carprices))
+
+hist(carprices$year)
+
+hist(carprices$condition)
+
+hist(carprices$mmr)
+
+hist(carprices$sellingprice)
+
+max(carprices$sellingprice)
+
+min(carprices$sellingprice)
+
+range(carprices$sellingprice)
+
+mean(carprices$sellingprice)
+
+mindate <- min(carprices$year)
+
+maxdate <- max(carprices$year)
+
+
+
+```
+
+```{r}
+#plots
+ggplot(data = carprices) +
+  geom_col(mapping = aes(x = year, y = sellingprice)) +
+  labs(title="Comparison of year and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "YEAR",
+       y = "SELLINGPRICE")##IMAGE1
+
+ggplot(data = carprices) +
+  geom_line(mapping = aes(x = year, y = sellingprice)) +
+  labs(title="Comparison of year and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "YEAR",
+       y = "SELLINGPRICE")##IMAGE2
+
+top_make <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(make) %>%
+             head(10)
+
+View(top_make)
+
+ggplot(data = top_make) +
+  geom_col(mapping = aes(x = make, y = sellingprice)) +
+  labs(title="Comparison of make and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "MAKE",
+       y = "SELLINGPRICE")##IMAGE3
+
+top_model <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(model) %>%
+             head(10)
+
+View(top_model)
+
+ggplot(data = top_model) +
+  geom_col(mapping = aes(x = model, y = sellingprice)) +
+  labs(title="Comparison of model and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "MODEL",
+       y = "SELLINGPRICE")##IMAGE4
+
+
+top_trim <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(trim) %>%
+             head(10)
+
+View(top_trim)
+
+ggplot(data = top_trim) +
+  geom_col(mapping = aes(x = trim, y = sellingprice)) +
+  labs(title="Comparison of trim and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "TRIM",
+       y = "SELLINGPRICE")##IMAGE5
+
+top_body <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(body) %>%
+             head(10)
+
+View(top_body)
+
+ggplot(data = top_body) +
+  geom_col(mapping = aes(x = body, y = sellingprice)) +
+  labs(title="Comparison of body and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "BODY",
+       y = "SELLINGPRICE")##IMAGE6
+
+top_trim <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(trim) %>%
+             head(10)
+
+View(top_trim)
+
+ggplot(data = top_trim) +
+  geom_col(mapping = aes(x = trim, y = sellingprice)) +
+  labs(title="Comparison of trim and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "TRIM",
+       y = "SELLINGPRICE")##IMAGE5
+
+top_transmission <- carprices %>%
+                    arrange(desc(sellingprice)) %>%
+                    group_by(transmission) %>%
+                    head(10)
+
+View(top_transmission)
+
+ggplot(data = top_transmission) +
+  geom_col(mapping = aes(x = transmission, y = sellingprice)) +
+  labs(title="Comparison of transmission and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "TRANSMISSION",
+       y = "SELLINGPRICE")##IMAGE6
+
+top_state <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(state) %>%
+             head(10)
+
+View(top_state)
+
+ggplot(data = top_state) +
+  geom_col(mapping = aes(x = state, y = sellingprice)) +
+  labs(title="Comparison of state and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "STATE",
+       y = "SELLINGPRICE")##IMAGE7
+
+top_condition <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(condition) %>%
+             head(10)
+
+View(top_condition)
+
+ggplot(data = top_condition) +
+  geom_col(mapping = aes(x = condition, y = sellingprice)) +
+  labs(title="Comparison of condition and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "CONDITION",
+       y = "SELLINGPRICE")##IMAGE8
+
+top_odometer <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(odometer) %>%
+             head(10)
+
+View(top_odometer)
+
+ggplot(data = top_odometer) +
+  geom_col(mapping = aes(x = odometer, y = sellingprice)) +
+  labs(title="Comparison of odometer and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "ODOMETER",
+       y = "SELLINGPRICE")##IMAGE9
+
+top_color <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(color) %>%
+             head(10)
+
+View(top_color)
+
+ggplot(data = top_color) +
+  geom_col(mapping = aes(x = color, y = sellingprice)) +
+  labs(title="Comparison of color and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "COLOR",
+       y = "SELLINGPRICE")##IMAGE10
+
+top_interior <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(interior) %>%
+             head(10)
+
+View(top_interior)
+
+ggplot(data = top_interior) +
+  geom_col(mapping = aes(x = interior, y = sellingprice)) +
+  labs(title="Comparison of interior and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "INTERIOR",
+       y = "SELLINGPRICE")##IMAGE11
+
+top_seller <- carprices %>%
+             arrange(desc(sellingprice)) %>%
+             group_by(seller) %>%
+             head(5)
+
+View(top_seller)
+
+ggplot(data = top_seller) +
+  geom_col(mapping = aes(x = seller, y = sellingprice)) +
+  labs(title="Comparison of seller and sellingprice",
+       caption=paste0("Data from: ", mindate, " to ", maxdate),
+       x = "SELLER",
+       y = "SELLINGPRICE")##IMAGE12
+
+
+
+```
+
